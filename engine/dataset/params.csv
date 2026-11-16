@@ -1,0 +1,20 @@
+﻿key,value,description,source
+reporting_year,2024,이행연도,-
+compliance_period,2024-2026,이행기간 2차 (2021년 기산 3년 단위),영 제9조①1
+pct_S_2024,1.00,부문별 백분율,지침 별표6 제3호
+pct_O_2024,0.00,개별 백분율,지침 별표6 제3호
+SGF_2024,0.15405257,"부문 성장계수 - ICAO 2024년 공식값(「CORSIA Annual SGF」 4th ed. Rev.1, 2025-12-12)",ICAO CORSIA Annual SGF 4ed Rev.1
+OE_2019_total,1120000,2019년 총 국제항공 CO2 (t) - 가상,-
+OE_B_2024,952000,2019년 배출량의 85%,지침 별표6 제4호
+FCF_JET,3.16,Jet-A/A1/TS-1/No.3,영 별표3 제1호
+FCF_AVGAS,3.10,AvGas/Jet-B,영 별표3 제1호
+DENSITY_STD,0.8,kg/L,지침 제3조④
+LC_JET,89,gCO2e/MJ,지침 별표6 제5호
+LC_AVGAS,95,gCO2e/MJ,지침 별표6 제5호
+THRESHOLD_OBLIGOR,10000,"t, 이상",법 제6조①1
+THRESHOLD_CERT,50000,"t, 이상이면 별표2 의무",지침 제3조③
+THRESHOLD_EXEMPT,3000,"t, 미만이면 면제",영 제9조①1
+MTOW_MIN,5700,"kg, 초과",법 제6조①1
+DATAGAP_LIMIT,0.05,5%,지침 별표4 6-b
+MATERIALITY_STANDARD,ICAO,ICAO 부속서 16 제4권 부록 6 3.5.1 (50만 t 초과 2% / 이하 5%),SARPs App.6 3.5.1
+REPORTING_LEVEL,AERODROME_PAIR,STATE_PAIR 또는 AERODROME_PAIR 택1,지침 별표4 5-a

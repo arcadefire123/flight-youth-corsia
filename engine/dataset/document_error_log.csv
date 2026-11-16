@@ -1,0 +1,28 @@
+﻿location,rule_id,description
+ER.operator_name,X-01,EMP와 법인명 불일치
+ER.state_pairs,X-09,국가쌍·공항쌍을 둘 다 작성
+ER.aerodrome_pairs[0],X-10,노선 합계가 총계와 불일치
+ER.total_flights,X-11,편수 합계 불일치
+ER.total_co2_t,X-12,보고 배출량이 재계산값과 8% 차이 (중요성 초과)
+ER.density_consistency_confirmed,X-17,밀도 일관성 확인란 부(否)
+EUCR.total_final_offsetting_requirement,X-07,국가 통보값과 불일치
+EMP.data_management,Q-01,서술 항목이 비어 있음
+units[1..2].quantity,X-08,말소 총량이 최종 상쇄의무량의 약 75%에 불과
+units[1].serial_start,F-21,동일 프로그램 내 오름차순 위반
+EUCR.operator_name,F-01,상쇄의무이행보고서 법인명 비어 있음
+ER.aircraft_identification,F-02,허용되지 않은 항공기 식별정보 선택값
+EMP.aoc.number,F-03,AOC 번호 누락
+ER.cert_info,F-04,필수 항목(CERT 정보) 누락
+VR.criteria,F-05,검증보고서 검증기준 누락
+EUCR.total_cancelled_units,F-06,말소 배출권 총량 누락
+VR_EUCR.findings_and_actions,F-07,상쇄의무이행검증보고서 발견사항 누락
+VR.template_version,F-09,구버전 서식 사용
+ER.issue_date,F-10,보고연도가 끝나기 전에 작성된 보고서
+EMP.version_history,F-26,변경승인 대상 변경을 승인 없이 적용
+EMP.records_retained,F-28,SAF 사용 이력 미보관
+ER.operator_address.city,X-02,주소 불일치
+VR.verified_total_fuel_t,X-03,검증기관 확인 연료량이 보고서와 다름
+ER.monitoring_method,X-04,승인된 모니터링 방법과 다른 방법 보고
+ER.fuel_mass_by_type,X-05,EMP에 없는 연료종류(JET-B) 보고
+CEF_DECL.total_ER_t,X-06,별지3 감축량 합계가 배출량보고서와 다름
+external_fuel_data.purchased_fuel_t,X-26,구매 연료량과 20% 차이

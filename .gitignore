@@ -1,0 +1,28 @@
+# ---- secrets and personal info (never commit) ----
+.env
+*.env
+*.key
+secrets.toml
+.streamlit/secrets.toml
+
+# ---- run outputs (large, team-internal records) ----
+**/runs/
+*.before_refresh
+
+# ---- archives and temp files ----
+*.zip
+~$*
+*.tmp
+
+# ---- python ----
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# ---- program-internal reports (not for the repo) ----
+reports/
+mentor_questions_briefing.md
+
+# ---- ICAO template files filled with synthetic values (redistribution terms not checked) ----
+11_dummy_documents/*.xlsx
+engine_backup_1117/

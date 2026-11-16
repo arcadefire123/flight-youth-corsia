@@ -1,0 +1,23 @@
+﻿case_id,category,description,inputs,expected,source
+KR-01,DENSITY,표준밀도 0.8kg/L 적용,uplift_volume_l=50000,40.0 t,지침 제3조④
+KR-02,AFBR_ROUND,AFBR 소수점 3자리 반올림,sum_U=1000.0;sum_BH=137.55,7.270,지침 별표2 제5호 2) 주3
+KR-03,FOR_NEGATIVE,FOR 음수 → 0,sum_OR=1000;sum_ER=1500,0,지침 별표6 제1호
+KR-04,FOR_ROUND,FOR 톤단위 올림 (ICAO),raw=3790874.4,3790875,SARPs 3.4.4 (지침 제9조①은 반올림)
+KR-05,EXEMPT_3000,3천톤 미만 면제,sum_OR=2999,면제(영 제9조①1),영 제9조①1
+KR-06,OGF_NEW,2019 실적 없는 신규 운영사,OE_y=50000;OE_B=10000,OGF=0.8000,지침 별표6 제4호
+KR-06b,OGF_CHECK,OGF 단위 검산,OE_y=11000000;OE_B=5100700,OGF=0.5363 (배수 2.156 아님),지침 별표6 제4호
+KR-06c,OGF_GUARD,0 나누기 가드,OE_y=0,예외 발생,구현 방어
+KR-07,EU_ETS,EU 역내 구간 제외,eu_ets_offset_flag=1 구간 합계,OE에서 차감,지침 제9조③
+KR-08a,CERT_49K,5만톤 미만 → CERT 가능,annual_CO2=49000,CERT 허용,지침 제3조③
+KR-08b,CERT_51K,5만톤 초과 → 연료사용량 방법 의무,annual_CO2=51000,별표2 의무,지침 제3조③ 단서
+KR-08c,CERT_50K,정확히 5만톤 (경계),annual_CO2=50000,"""이상""이므로 별표2 의무",지침 제3조③ 단서
+KR-09,CERT_1920,2019~2020 구간은 50만톤 기준,year=2019;annual_CO2=400000,CERT 허용,지침 별표1 4-a
+KR-10a,GAP_4_96,갭 4.96% → 반올림 5.0%,gap_ratio=0.0496,5.0% (초과 아님),지침 별표4 6-b1
+KR-10b,GAP_5_04,갭 5.04% → 반올림 5.0%,gap_ratio=0.0504,5.0% (판정 주의),지침 별표4 6-b1
+KR-10c,GAP_5_1,갭 5.1% → 초과,gap_ratio=0.051,초과 플래그,T-04
+KR-11,CEF_MIXED,Jet 계열과 AvGas 계열 SAF 혼재,FCF 3.16 + 3.10 동시,예외 또는 분리계산,지침 별표6 제5호
+KR-12,MTOW_5700,"MTOW 정확히 5,700kg",mtow_kg=5700,"대상 제외(""초과"")",법 제6조①1
+KR-13,THRESHOLD_10K,"연간 정확히 10,000t",annual_CO2=10000,"이행의무자 지정(""이상"")",법 제6조①1
+KR-14,MATERIALITY,ICAO 중요성 임계치,annual_CO2=1899987,2% (50만 t 초과),SARPs App.6 3.5.1
+KR-15,REPORT_LEVEL,국가쌍·공항쌍 둘 다 작성,level_5_1=Y;level_5_2=Y,오류(택일 위반),지침 별표4 5-a
+KR-16,CEF_CALC,적격연료 감축량 검산,MS=100;FCF=3.16;L_CEF=45;LC=89,156.22 t,지침 별표6 제5호

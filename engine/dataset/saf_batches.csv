@@ -1,0 +1,5 @@
+﻿saf_batch_id,pathway,certification_scheme,certificate_no,mass_tonnes,equivalent_fuel_type,fcf,lca_value_source,l_cef_gco2e_mj,lc_gco2e_mj,blend_date,supplier,double_claimed_elsewhere,is_error_case
+SAF-2024-001,HEFA-SPK,ISCC CORSIA,ISCC-CORSIA-2024-0041,1850.0,JET-A1,3.16,DEFAULT,24.0,89,2024-03-14,공급사 A(가상),N,N
+SAF-2024-002,ATJ-SPK,RSB CORSIA,RSB-CORSIA-2024-0117,920.0,JET-A1,3.16,ACTUAL,18.5,89,2024-08-02,공급사 B(가상),N,N
+SAF-2024-003,LCAF,ISCC CORSIA,ISCC-CORSIA-2024-0208,410.0,JET-A1,3.16,DEFAULT,81.0,89,2024-11-20,공급사 C(가상),N,N
+SAF-2024-901,HEFA-SPK,ISCC CORSIA,ISCC-CORSIA-2024-0041,300.0,AVGAS,3.1,DEFAULT,24.0,95,2024-05-10,공급사 A(가상),N,Y

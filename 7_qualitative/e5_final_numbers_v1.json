@@ -1,0 +1,835 @@
+{
+ "date": "2026-11-14",
+ "chosen": "low ×3 (선택)",
+ "chosen_rep1": "low 1회차만",
+ "arms": {
+  "low ×3": {
+   "label": "low ×3 (선택)",
+   "accuracy": {
+    "borderline/single": {
+     "n": 9,
+     "verdict": 33.3,
+     "core": 66.7
+    },
+    "borderline/together": {
+     "n": 9,
+     "verdict": 33.3,
+     "core": 66.7
+    },
+    "claude/single": {
+     "n": 138,
+     "verdict": 100.0,
+     "core": 98.6
+    },
+    "claude/together": {
+     "n": 138,
+     "verdict": 97.8,
+     "core": 97.1
+    },
+    "new/single": {
+     "n": 9,
+     "verdict": 100.0,
+     "core": 94.4
+    },
+    "new/together": {
+     "n": 9,
+     "verdict": 100.0,
+     "core": 97.2
+    },
+    "seed/single": {
+     "n": 24,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "seed/together": {
+     "n": 24,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "team/single": {
+     "n": 15,
+     "verdict": 86.7,
+     "core": 90.7
+    },
+    "team/together": {
+     "n": 15,
+     "verdict": 100.0,
+     "core": 94.4
+    }
+   },
+   "avg_claude_verdict": 98.9,
+   "cost": {
+    "calls": 390,
+    "per_call": 0.0127,
+    "total": 4.9617,
+    "sec": 5.4,
+    "avg_in": 2535,
+    "avg_out": 765
+   },
+   "probes": {
+    "B_together": [
+     15,
+     18
+    ],
+    "B_single_false": [
+     0,
+     18
+    ],
+    "C_together_over": [
+     0,
+     18
+    ],
+    "C_single_over": [
+     0,
+     18
+    ],
+    "pos": [
+     12,
+     12
+    ]
+   },
+   "reference_optional": {
+    "borderline/single": {
+     "all": 87.5,
+     "nondiv": 95.2,
+     "div": 33.3,
+     "div_n": 3,
+     "all_items": 76.5
+    },
+    "borderline/together": {
+     "all": 79.2,
+     "nondiv": 90.5,
+     "div": 0.0,
+     "div_n": 3,
+     "all_items": 72.5
+    },
+    "claude/single": {
+     "all": 88.5,
+     "nondiv": 94.0,
+     "div": 23.8,
+     "div_n": 21,
+     "all_items": 95.2
+    },
+    "claude/together": {
+     "all": 87.0,
+     "nondiv": 96.3,
+     "div": 3.7,
+     "div_n": 27,
+     "all_items": 93.6
+    },
+    "new/single": {
+     "all": 100.0,
+     "nondiv": 100.0,
+     "div": null,
+     "div_n": 0,
+     "all_items": 96.3
+    },
+    "new/together": {
+     "all": 88.9,
+     "nondiv": 88.9,
+     "div": null,
+     "div_n": 0,
+     "all_items": 94.4
+    },
+    "seed/single": {
+     "all": 92.2,
+     "nondiv": 95.8,
+     "div": 33.3,
+     "div_n": 3,
+     "all_items": 97.0
+    },
+    "seed/together": {
+     "all": 94.1,
+     "nondiv": 95.8,
+     "div": 66.7,
+     "div_n": 3,
+     "all_items": 97.8
+    },
+    "team/single": {
+     "all": 86.7,
+     "nondiv": 96.3,
+     "div": 0.0,
+     "div_n": 3,
+     "all_items": 89.3
+    },
+    "team/together": {
+     "all": 93.3,
+     "nondiv": 100.0,
+     "div": 33.3,
+     "div_n": 3,
+     "all_items": 94.0
+    }
+   },
+   "final_verdict_misses": {
+    "Q02-B2|together": 3,
+    "Q03-T|single": 3,
+    "Q03-T|together": 3,
+    "Q04-T|single": 2,
+    "Q07-T|single": 3,
+    "Q07-T|together": 3
+   }
+  },
+  "low 1회차": {
+   "label": "low 1회차만",
+   "accuracy": {
+    "borderline/single": {
+     "n": 3,
+     "verdict": 33.3,
+     "core": 66.7
+    },
+    "borderline/together": {
+     "n": 3,
+     "verdict": 33.3,
+     "core": 66.7
+    },
+    "claude/single": {
+     "n": 46,
+     "verdict": 100.0,
+     "core": 98.8
+    },
+    "claude/together": {
+     "n": 46,
+     "verdict": 97.8,
+     "core": 97.1
+    },
+    "new/single": {
+     "n": 3,
+     "verdict": 100.0,
+     "core": 91.7
+    },
+    "new/together": {
+     "n": 3,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "seed/single": {
+     "n": 8,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "seed/together": {
+     "n": 8,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "team/single": {
+     "n": 5,
+     "verdict": 100.0,
+     "core": 94.4
+    },
+    "team/together": {
+     "n": 5,
+     "verdict": 100.0,
+     "core": 94.4
+    }
+   },
+   "avg_claude_verdict": 98.9,
+   "cost": {
+    "calls": 130,
+    "per_call": 0.0127,
+    "total": 1.6574,
+    "sec": 5.4,
+    "avg_in": 2535,
+    "avg_out": 768
+   },
+   "probes": {
+    "B_together": [
+     5,
+     6
+    ],
+    "B_single_false": [
+     0,
+     6
+    ],
+    "C_together_over": [
+     0,
+     6
+    ],
+    "C_single_over": [
+     0,
+     6
+    ],
+    "pos": [
+     4,
+     4
+    ]
+   },
+   "reference_optional": {
+    "borderline/single": {
+     "all": 75.0,
+     "nondiv": 85.7,
+     "div": 0.0,
+     "div_n": 1,
+     "all_items": 70.6
+    },
+    "borderline/together": {
+     "all": 75.0,
+     "nondiv": 85.7,
+     "div": 0.0,
+     "div_n": 1,
+     "all_items": 70.6
+    },
+    "claude/single": {
+     "all": 87.8,
+     "nondiv": 94.0,
+     "div": 14.3,
+     "div_n": 7,
+     "all_items": 95.0
+    },
+    "claude/together": {
+     "all": 87.8,
+     "nondiv": 97.5,
+     "div": 0.0,
+     "div_n": 9,
+     "all_items": 93.9
+    },
+    "new/single": {
+     "all": 100.0,
+     "nondiv": 100.0,
+     "div": null,
+     "div_n": 0,
+     "all_items": 94.4
+    },
+    "new/together": {
+     "all": 83.3,
+     "nondiv": 83.3,
+     "div": null,
+     "div_n": 0,
+     "all_items": 94.4
+    },
+    "seed/single": {
+     "all": 94.1,
+     "nondiv": 93.8,
+     "div": 100.0,
+     "div_n": 1,
+     "all_items": 97.8
+    },
+    "seed/together": {
+     "all": 94.1,
+     "nondiv": 93.8,
+     "div": 100.0,
+     "div_n": 1,
+     "all_items": 97.8
+    },
+    "team/single": {
+     "all": 80.0,
+     "nondiv": 88.9,
+     "div": 0.0,
+     "div_n": 1,
+     "all_items": 89.3
+    },
+    "team/together": {
+     "all": 100.0,
+     "nondiv": 100.0,
+     "div": 100.0,
+     "div_n": 1,
+     "all_items": 96.4
+    }
+   },
+   "final_verdict_misses": {
+    "Q02-B2|together": 1,
+    "Q03-T|single": 1,
+    "Q03-T|together": 1,
+    "Q07-T|single": 1,
+    "Q07-T|together": 1
+   }
+  },
+  "medium": {
+   "label": "medium ×1",
+   "accuracy": {
+    "borderline/single": {
+     "n": 3,
+     "verdict": 33.3,
+     "core": 66.7
+    },
+    "borderline/together": {
+     "n": 3,
+     "verdict": 33.3,
+     "core": 66.7
+    },
+    "claude/single": {
+     "n": 46,
+     "verdict": 100.0,
+     "core": 98.8
+    },
+    "claude/together": {
+     "n": 46,
+     "verdict": 95.7,
+     "core": 97.7
+    },
+    "new/single": {
+     "n": 3,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "new/together": {
+     "n": 3,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "seed/single": {
+     "n": 8,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "seed/together": {
+     "n": 8,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "team/single": {
+     "n": 5,
+     "verdict": 100.0,
+     "core": 94.4
+    },
+    "team/together": {
+     "n": 5,
+     "verdict": 80.0,
+     "core": 88.9
+    }
+   },
+   "avg_claude_verdict": 97.85,
+   "cost": {
+    "calls": 130,
+    "per_call": 0.013,
+    "total": 1.6895,
+    "sec": 5.6,
+    "avg_in": 2535,
+    "avg_out": 793
+   },
+   "probes": {
+    "B_together": [
+     5,
+     6
+    ],
+    "B_single_false": [
+     0,
+     6
+    ],
+    "C_together_over": [
+     0,
+     6
+    ],
+    "C_single_over": [
+     0,
+     6
+    ],
+    "pos": [
+     4,
+     4
+    ]
+   },
+   "reference_optional": {
+    "borderline/single": {
+     "all": 87.5,
+     "nondiv": 100.0,
+     "div": 0.0,
+     "div_n": 1,
+     "all_items": 76.5
+    },
+    "borderline/together": {
+     "all": 87.5,
+     "nondiv": 100.0,
+     "div": 0.0,
+     "div_n": 1,
+     "all_items": 76.5
+    },
+    "claude/single": {
+     "all": 87.8,
+     "nondiv": 94.0,
+     "div": 14.3,
+     "div_n": 7,
+     "all_items": 95.0
+    },
+    "claude/together": {
+     "all": 85.6,
+     "nondiv": 95.1,
+     "div": 0.0,
+     "div_n": 9,
+     "all_items": 93.5
+    },
+    "new/single": {
+     "all": 83.3,
+     "nondiv": 83.3,
+     "div": null,
+     "div_n": 0,
+     "all_items": 94.4
+    },
+    "new/together": {
+     "all": 100.0,
+     "nondiv": 100.0,
+     "div": null,
+     "div_n": 0,
+     "all_items": 100.0
+    },
+    "seed/single": {
+     "all": 88.2,
+     "nondiv": 93.8,
+     "div": 0.0,
+     "div_n": 1,
+     "all_items": 95.6
+    },
+    "seed/together": {
+     "all": 94.1,
+     "nondiv": 93.8,
+     "div": 100.0,
+     "div_n": 1,
+     "all_items": 97.8
+    },
+    "team/single": {
+     "all": 90.0,
+     "nondiv": 100.0,
+     "div": 0.0,
+     "div_n": 1,
+     "all_items": 92.9
+    },
+    "team/together": {
+     "all": 90.0,
+     "nondiv": 100.0,
+     "div": 0.0,
+     "div_n": 1,
+     "all_items": 89.3
+    }
+   },
+   "final_verdict_misses": {
+    "Q07-D1|together": 1,
+    "Q02-B2|together": 1,
+    "Q03-T|single": 1,
+    "Q03-T|together": 1,
+    "Q04-T|together": 1,
+    "Q07-T|single": 1,
+    "Q07-T|together": 1
+   }
+  },
+  "default": {
+   "label": "기본(high) ×1",
+   "accuracy": {
+    "borderline/single": {
+     "n": 3,
+     "verdict": 33.3,
+     "core": 66.7
+    },
+    "borderline/together": {
+     "n": 3,
+     "verdict": 33.3,
+     "core": 66.7
+    },
+    "claude/single": {
+     "n": 46,
+     "verdict": 100.0,
+     "core": 98.8
+    },
+    "claude/together": {
+     "n": 46,
+     "verdict": 100.0,
+     "core": 95.9
+    },
+    "new/single": {
+     "n": 3,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "new/together": {
+     "n": 3,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "seed/single": {
+     "n": 8,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "seed/together": {
+     "n": 8,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "team/single": {
+     "n": 5,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "team/together": {
+     "n": 5,
+     "verdict": 100.0,
+     "core": 94.4
+    }
+   },
+   "avg_claude_verdict": 100.0,
+   "cost": {
+    "calls": 130,
+    "per_call": 0.016,
+    "total": 2.0795,
+    "sec": 7.6,
+    "avg_in": 2535,
+    "avg_out": 1093
+   },
+   "probes": {
+    "B_together": [
+     6,
+     6
+    ],
+    "B_single_false": [
+     0,
+     6
+    ],
+    "C_together_over": [
+     0,
+     6
+    ],
+    "C_single_over": [
+     0,
+     6
+    ],
+    "pos": [
+     4,
+     4
+    ]
+   },
+   "reference_optional": {
+    "borderline/single": {
+     "all": 75.0,
+     "nondiv": 85.7,
+     "div": 0.0,
+     "div_n": 1,
+     "all_items": 70.6
+    },
+    "borderline/together": {
+     "all": 75.0,
+     "nondiv": 85.7,
+     "div": 0.0,
+     "div_n": 1,
+     "all_items": 70.6
+    },
+    "claude/single": {
+     "all": 88.9,
+     "nondiv": 95.2,
+     "div": 14.3,
+     "div_n": 7,
+     "all_items": 95.4
+    },
+    "claude/together": {
+     "all": 86.7,
+     "nondiv": 95.1,
+     "div": 11.1,
+     "div_n": 9,
+     "all_items": 92.7
+    },
+    "new/single": {
+     "all": 100.0,
+     "nondiv": 100.0,
+     "div": null,
+     "div_n": 0,
+     "all_items": 100.0
+    },
+    "new/together": {
+     "all": 83.3,
+     "nondiv": 83.3,
+     "div": null,
+     "div_n": 0,
+     "all_items": 94.4
+    },
+    "seed/single": {
+     "all": 82.4,
+     "nondiv": 87.5,
+     "div": 0.0,
+     "div_n": 1,
+     "all_items": 93.3
+    },
+    "seed/together": {
+     "all": 94.1,
+     "nondiv": 93.8,
+     "div": 100.0,
+     "div_n": 1,
+     "all_items": 97.8
+    },
+    "team/single": {
+     "all": 90.0,
+     "nondiv": 100.0,
+     "div": 0.0,
+     "div_n": 1,
+     "all_items": 96.4
+    },
+    "team/together": {
+     "all": 90.0,
+     "nondiv": 88.9,
+     "div": 100.0,
+     "div_n": 1,
+     "all_items": 92.9
+    }
+   },
+   "final_verdict_misses": {
+    "Q03-T|single": 1,
+    "Q03-T|together": 1,
+    "Q07-T|single": 1,
+    "Q07-T|together": 1
+   }
+  },
+  "opus": {
+   "label": "Opus 5.5 ×1",
+   "accuracy": {
+    "borderline/single": {
+     "n": 3,
+     "verdict": 33.3,
+     "core": 66.7
+    },
+    "borderline/together": {
+     "n": 3,
+     "verdict": 33.3,
+     "core": 66.7
+    },
+    "claude/single": {
+     "n": 46,
+     "verdict": 97.8,
+     "core": 93.6
+    },
+    "claude/together": {
+     "n": 46,
+     "verdict": 97.8,
+     "core": 97.7
+    },
+    "new/single": {
+     "n": 3,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "new/together": {
+     "n": 3,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "seed/single": {
+     "n": 8,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "seed/together": {
+     "n": 8,
+     "verdict": 100.0,
+     "core": 100.0
+    },
+    "team/single": {
+     "n": 5,
+     "verdict": 100.0,
+     "core": 94.4
+    },
+    "team/together": {
+     "n": 5,
+     "verdict": 100.0,
+     "core": 94.4
+    }
+   },
+   "avg_claude_verdict": 97.8,
+   "cost": {
+    "calls": 130,
+    "per_call": 0.0348,
+    "total": 4.5289,
+    "sec": 10.9,
+    "avg_in": 2535,
+    "avg_out": 1235
+   },
+   "probes": {
+    "B_together": [
+     6,
+     6
+    ],
+    "B_single_false": [
+     0,
+     6
+    ],
+    "C_together_over": [
+     0,
+     6
+    ],
+    "C_single_over": [
+     0,
+     6
+    ],
+    "pos": [
+     4,
+     4
+    ]
+   },
+   "reference_optional": {
+    "borderline/single": {
+     "all": 75.0,
+     "nondiv": 71.4,
+     "div": 100.0,
+     "div_n": 1,
+     "all_items": 70.6
+    },
+    "borderline/together": {
+     "all": 75.0,
+     "nondiv": 71.4,
+     "div": 100.0,
+     "div_n": 1,
+     "all_items": 70.6
+    },
+    "claude/single": {
+     "all": 86.7,
+     "nondiv": 92.8,
+     "div": 14.3,
+     "div_n": 7,
+     "all_items": 91.2
+    },
+    "claude/together": {
+     "all": 85.6,
+     "nondiv": 93.8,
+     "div": 11.1,
+     "div_n": 9,
+     "all_items": 93.5
+    },
+    "new/single": {
+     "all": 100.0,
+     "nondiv": 100.0,
+     "div": null,
+     "div_n": 0,
+     "all_items": 100.0
+    },
+    "new/together": {
+     "all": 100.0,
+     "nondiv": 100.0,
+     "div": null,
+     "div_n": 0,
+     "all_items": 100.0
+    },
+    "seed/single": {
+     "all": 94.1,
+     "nondiv": 93.8,
+     "div": 100.0,
+     "div_n": 1,
+     "all_items": 97.8
+    },
+    "seed/together": {
+     "all": 94.1,
+     "nondiv": 93.8,
+     "div": 100.0,
+     "div_n": 1,
+     "all_items": 97.8
+    },
+    "team/single": {
+     "all": 100.0,
+     "nondiv": 100.0,
+     "div": 100.0,
+     "div_n": 1,
+     "all_items": 96.4
+    },
+    "team/together": {
+     "all": 100.0,
+     "nondiv": 100.0,
+     "div": 100.0,
+     "div_n": 1,
+     "all_items": 96.4
+    }
+   },
+   "final_verdict_misses": {
+    "Q07-U|single": 1,
+    "Q07-U|together": 1,
+    "Q03-T|single": 1,
+    "Q03-T|together": 1,
+    "Q07-T|single": 1,
+    "Q07-T|together": 1
+   }
+  }
+ }
+}

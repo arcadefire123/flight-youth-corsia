@@ -1,0 +1,355 @@
+{
+  "documents": {
+    "EMP": {
+      "operator_name": "한빛항공 주식회사",
+      "version": "2.0",
+      "approved_date": "2023-11-15",
+      "monitoring_method": "BLOCK_OFF_ON",
+      "operator_address": {
+        "street": "인천광역시 중구 공항로 272",
+        "city": "인천",
+        "postal_code": "22382",
+        "country": "KR"
+      },
+      "aoc": {
+        "number": "KR-AOC-2015-0123",
+        "issuing_authority": "국토교통부",
+        "issue_date": "2015-03-02"
+      },
+      "aircraft_identification": "ICAO_DESIGNATOR",
+      "icao_designator": "HBA",
+      "fuel_types": [
+        "JET-A1"
+      ],
+      "version_history": [
+        {
+          "version": "1.0",
+          "date": "2019-12-10",
+          "changes": []
+        },
+        {
+          "version": "2.0",
+          "date": "2023-11-15",
+          "changes": [
+            {
+              "category": "연료 모니터링 방법 및 절차",
+              "detail": "방법 A → Block-off / Block-on 전환",
+              "approved": true
+            }
+          ]
+        }
+      ],
+      "records_retained": [
+        "모니터링 계획서",
+        "배출량보고서 및 배출량검증보고서",
+        "상쇄의무이행보고서 및 상쇄의무이행검증보고서",
+        "지속가능항공연료 사용 이력"
+      ],
+      "data_management": "운항관리시스템(OCS)에서 항공편별 블록오프·블록온 연료량을 자동 수집하여 익일 02:00 배치로 배출량관리DB에 적재한다. 운항본부 운항관리팀이 1차 확인하고, 안전환경실 탄소관리파트가 월 단위로 급유전표와 대조한 뒤 승인한다. 원천자료는 10년간 보관한다.",
+      "data_gap_procedure": "일 단위 적재 시 필수 항목 결측을 자동 탐지하여 담당자에게 통보하고, 1차 출처(OCS) 재조회 → 2차 출처(급유전표, technical log) 재구성 순으로 복구한다. 복구 불가 항공편은 갭으로 분류하고 ICAO CERT로 추정하며, 갭 비율이 분기 누적 3%를 넘으면 원인분석 보고를 실시하여 연 5% 이하를 유지한다.",
+      "route_determination": "비행계획서 제7항 항공기 식별과 출·도착 공항의 국가코드를 대조하여 국제운항을 판별한다. 상쇄의무 대상 여부는 ICAO가 공표하는 CORSIA States for Chapter 3 State Pairs 목록과 대조하여 결정하며, 제18항 STS/HUM·HOSP·MEDEVAC·FFR 표기 항공편은 모니터링에서 제외한다.",
+      "measurement_timing": "Block-off / Block-on 방법을 적용한다. 블록오프 연료량은 마지막 도어 폐쇄 후 첫 엔진 시동 직전 FQIS 판독값을, 블록온 잔량은 마지막 엔진 정지 직후 판독값을 사용한다. ACARS로 자동 전송되며 전송 실패 시 technical log 수기 기록을 대체 사용한다.",
+      "risk_assessment": "FQIS 오차, ACARS 전송 누락, 국내선·국제선 구분 오류, 밀도 적용 불일치를 주요 위험으로 식별하였다. 각 위험에 대해 월 단위 샘플 대조, 전송 실패 알림, 노선 마스터 이중 확인, 급유업체 밀도자료 수령 절차를 통제활동으로 운영한다."
+    },
+    "ER": {
+      "operator_name": "한빛항공 주식회사",
+      "reporting_year": 2024,
+      "emp_version": "2.0",
+      "template_version": "ETM Vol.IV Appendix 1 (4th edition)",
+      "issue_date": "2025-03-20",
+      "operator_address": {
+        "street": "인천광역시 중구 공항로 272",
+        "city": "인천",
+        "postal_code": "22382",
+        "country": "KR"
+      },
+      "aoc": {
+        "number": "KR-AOC-2015-0123",
+        "issuing_authority": "국토교통부",
+        "issue_date": "2015-03-02"
+      },
+      "aircraft_identification": "ICAO_DESIGNATOR",
+      "icao_designator": "HBA",
+      "verification_body": "한국항공탄소검증원(가상)",
+      "monitoring_method": "BLOCK_OFF_ON",
+      "fuel_mass_by_type": {
+        "JET-A1": 601261.7
+      },
+      "total_fuel_t": 601261.7,
+      "offsetting_co2_t": 1769609.2,
+      "offsetting_flights": 12946,
+      "density_method": "STANDARD",
+      "data_gap_pct": 0.0,
+      "aircraft": [
+        "HL7501",
+        "HL7502",
+        "HL7503",
+        "HL7504",
+        "HL8001",
+        "HL8002",
+        "HL8003",
+        "HL8004",
+        "HL8005",
+        "HL8006",
+        "HL8007",
+        "HL8008",
+        "HL8009",
+        "HL8010",
+        "HL8011",
+        "HL8012",
+        "HL8301",
+        "HL8302",
+        "HL8303",
+        "HL8304",
+        "HL8305",
+        "HL8306",
+        "HL8307",
+        "HL8308",
+        "HL8309",
+        "HL8310"
+      ],
+      "cert_info": {
+        "used": false
+      },
+      "cef_claim": {
+        "batches": [
+          "SAF-2024-001",
+          "SAF-2024-002"
+        ],
+        "ER_t": 6572.44
+      },
+      "aerodrome_pairs": [
+        {
+          "dep_aerodrome": "EDDF",
+          "arr_aerodrome": "LFPG",
+          "fuel_type": "JET-A1",
+          "flights": 53,
+          "fuel_t": 276.0,
+          "co2_t": 872.2,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "KJFK",
+          "arr_aerodrome": "RKSI",
+          "fuel_type": "JET-A1",
+          "flights": 732,
+          "fuel_t": 81953.0,
+          "co2_t": 258971.5,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "KLAX",
+          "arr_aerodrome": "RKSI",
+          "fuel_type": "JET-A1",
+          "flights": 732,
+          "fuel_t": 76137.5,
+          "co2_t": 240594.5,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "LFPG",
+          "arr_aerodrome": "EDDF",
+          "fuel_type": "JET-A1",
+          "flights": 53,
+          "fuel_t": 274.6,
+          "co2_t": 867.7,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "LFPG",
+          "arr_aerodrome": "RKSI",
+          "fuel_type": "JET-A1",
+          "flights": 720,
+          "fuel_t": 64841.5,
+          "co2_t": 204899.1,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "RCTP",
+          "arr_aerodrome": "RKSI",
+          "fuel_type": "JET-A1",
+          "flights": 2730,
+          "fuel_t": 20745.6,
+          "co2_t": 65556.1,
+          "offsetting": false
+        },
+        {
+          "dep_aerodrome": "RJTT",
+          "arr_aerodrome": "RKSI",
+          "fuel_type": "JET-A1",
+          "flights": 2770,
+          "fuel_t": 19379.4,
+          "co2_t": 61238.9,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "RKSI",
+          "arr_aerodrome": "KJFK",
+          "fuel_type": "JET-A1",
+          "flights": 732,
+          "fuel_t": 78983.0,
+          "co2_t": 249586.3,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "RKSI",
+          "arr_aerodrome": "KLAX",
+          "fuel_type": "JET-A1",
+          "flights": 732,
+          "fuel_t": 69402.2,
+          "co2_t": 219311.0,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "RKSI",
+          "arr_aerodrome": "LFPG",
+          "fuel_type": "JET-A1",
+          "flights": 732,
+          "fuel_t": 72549.6,
+          "co2_t": 229256.7,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "RKSI",
+          "arr_aerodrome": "RCTP",
+          "fuel_type": "JET-A1",
+          "flights": 2770,
+          "fuel_t": 20513.2,
+          "co2_t": 64821.7,
+          "offsetting": false
+        },
+        {
+          "dep_aerodrome": "RKSI",
+          "arr_aerodrome": "RJTT",
+          "fuel_type": "JET-A1",
+          "flights": 2770,
+          "fuel_t": 18820.2,
+          "co2_t": 59471.8,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "RKSI",
+          "arr_aerodrome": "VTBS",
+          "fuel_type": "JET-A1",
+          "flights": 732,
+          "fuel_t": 18991.6,
+          "co2_t": 60013.5,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "RKSI",
+          "arr_aerodrome": "WSSS",
+          "fuel_type": "JET-A1",
+          "flights": 728,
+          "fuel_t": 20746.2,
+          "co2_t": 65558.0,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "VTBS",
+          "arr_aerodrome": "RKSI",
+          "fuel_type": "JET-A1",
+          "flights": 732,
+          "fuel_t": 17950.0,
+          "co2_t": 56722.0,
+          "offsetting": true
+        },
+        {
+          "dep_aerodrome": "WSSS",
+          "arr_aerodrome": "RKSI",
+          "fuel_type": "JET-A1",
+          "flights": 728,
+          "fuel_t": 19698.1,
+          "co2_t": 62246.0,
+          "offsetting": true
+        }
+      ],
+      "state_pairs": null,
+      "total_co2_t": 1899987.0,
+      "total_flights": 18446,
+      "density_consistency_confirmed": true,
+      "data_gap_explanation": ""
+    },
+    "EUCR": {
+      "operator_name": "한빛항공 주식회사",
+      "compliance_period": "2024-2026",
+      "total_final_offsetting_requirement": 265773,
+      "total_cancelled_units": 265773,
+      "operator_address": {
+        "street": "인천광역시 중구 공항로 272",
+        "city": "인천",
+        "postal_code": "22382",
+        "country": "KR"
+      }
+    },
+    "CEF_DECL": {
+      "operator_name": "한빛항공 주식회사",
+      "batches": [
+        {
+          "saf_batch_id": "SAF-2024-001",
+          "mass_tonnes": 1850.0
+        },
+        {
+          "saf_batch_id": "SAF-2024-002",
+          "mass_tonnes": 920.0
+        }
+      ],
+      "total_ER_t": 6572.44
+    },
+    "VR": {
+      "template_version": "ETM Vol.IV Appendix 1 (4th edition)",
+      "verifier": {
+        "body": "한국항공탄소검증원(가상)",
+        "verifiers": [
+          "김검증(팀장)",
+          "이심사"
+        ]
+      },
+      "criteria": "ICAO 부속서 16 제4권 부록 6, 환경기술매뉴얼(Doc 9501) 제4권 3.3, 승인된 모니터링 계획 v2.0",
+      "findings_and_actions": "표본 점검 결과 중대한 허위진술 및 부적합은 발견되지 않았다. 급유전표와 운항관리시스템 간 단위 표기 불일치 2건을 발견하여 운영사에 통보하였고, 운영사는 보고서 제출 전 수정을 완료하였다. 미해결 사항은 없다.",
+      "verification_opinion": "검증팀은 합리적 확신 수준에서 배출량보고서를 검증하였으며, 보고 배출량과 검증기관 재산정값의 차이가 중요성 임계치(2%) 미만이고 중대한 부적합이 없으므로 \"만족(verified as satisfactory)\"으로 검증한다.",
+      "other": "해당 없음",
+      "verified_total_fuel_t": 601261.7,
+      "verified_total_flights": 18446
+    },
+    "VR_EUCR": {
+      "verifier": {
+        "body": "한국항공탄소검증원(가상)",
+        "verifiers": [
+          "김검증(팀장)",
+          "이심사"
+        ]
+      },
+      "criteria": "ICAO 부속서 16 제4권 부록 6 3.3.2, 배출권 등록부 말소 기록",
+      "findings_and_actions": "말소 배출권의 일련번호·수량을 등록부 기록과 전수 대조하였으며 불일치 사항은 없다.",
+      "verification_opinion": "말소 총량이 통보된 최종 상쇄의무량과 일치하므로 \"만족\"으로 검증한다.",
+      "other": "해당 없음"
+    }
+  },
+  "emission_units": [
+    {
+      "program": "ACR",
+      "serial_start": "ACR0000001",
+      "serial_end": "ACR0159463",
+      "quantity": 159463,
+      "cancel_date": "2027-01-20"
+    },
+    {
+      "program": "ACR",
+      "serial_start": "ACR0159468",
+      "serial_end": "ACR0239198",
+      "quantity": 79731,
+      "cancel_date": "2027-01-20"
+    },
+    {
+      "program": "CAR",
+      "serial_start": "CAR0000001",
+      "serial_end": "CAR0026579",
+      "quantity": 26579,
+      "cancel_date": "2027-01-25"
+    }
+  ],
+  "external_fuel_data": {
+    "purchased_fuel_t": 601261.7
+  }
+}
