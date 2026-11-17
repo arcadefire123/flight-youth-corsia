@@ -61,7 +61,7 @@ python tests/test_engine.py
 | 계산엔진 단위테스트 | **49 / 49 통과** |
 | 검증엔진 단위테스트 | **51 / 51 통과** |
 | 엑셀 내려받기 단위테스트 (`tests/test_excel.py`) | **21개** (LibreOffice 열기 1개는 `CORSIA_TEST_LIBREOFFICE=1`일 때만) |
-| 웹 화면 시험 (`tests/test_web_ui.py`) | **15개** (AI는 모의 응답, 기억 폴더는 임시 폴더) |
+| 웹 화면 시험 (`tests/test_web_ui.py`) | **24개** (AI는 모의 응답, 기억 폴더는 임시 폴더) |
 | `flights_clean.csv` 총 CO₂ | **1,899,987.0 t** (데이터셋 설계값과 일치) |
 | 등록 검증 규칙 | **63건** (형식 18 · 임계값 9 · 일관성 28 · 정성 8) |
 | **정상본 오탐** | **0건** → 검증의견 "만족" |

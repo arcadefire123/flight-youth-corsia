@@ -34,7 +34,9 @@ CHECK_STATUS_COLOR = {'있음': '#2E7D52', '부족': '#B45F06', '없음': '#B423
 
 
 def esc(v):
-    return html.escape('' if v is None else str(v))
+    """HTML 이스케이프 + $를 HTML 문자(&#36;)로. 화면(마크다운)이 $…$ 두 개를 수식으로 읽어 글자체가 바뀌거나
+    글자가 사라지는 것을 막는다. 카드는 HTML 덩어리라 지금은 문제가 없지만, 같은 글이 일반 마크다운으로 들어가도 안전하게 한다."""
+    return html.escape('' if v is None else str(v)).replace('$', '&#36;')
 
 
 def item_source(it):
@@ -120,17 +122,27 @@ def item_card_html(it):
 
 
 def summary_html(result):
-    """결과 한 줄 요약: 판정 개수 · 비용 · 시간. (점수가 아니다 — 개수만 센다.)"""
-    s = result.get('summary') or {}
-    v = s.get('verdicts') or {}
+    """결과 한 줄 요약: 항목 8건을 빠짐없이 센다(점수가 아니라 개수). 판정 3종 · 해당 없음 · 서술 없음 · 판정 못 받음.
+    어느 범주에도 안 들어가는 항목이 있으면 「기타」로 센다 — 더하면 항상 항목 수와 같다."""
+    items = result.get('items', [])
     cost = result.get('cost') or {}
     timing = result.get('timing') or {}
-    n_na = sum(1 for i in result.get('items', []) if i.get('status') == 'skipped_condition')
-    parts = [f'{k} {v.get(k, 0)}' for k in ('충분', '보완 필요', '판단 불가')]
+    failed = ('network_error', 'api_error', 'parse_error', 'budget_exceeded')
+    verdicts = ('충분', '보완 필요', '판단 불가')
+    counts = {k: sum(1 for i in items if i.get('verdict') == k) for k in verdicts}
+    n_na = sum(1 for i in items if i.get('status') == 'skipped_condition' and i.get('verdict') not in verdicts)
+    n_nt = sum(1 for i in items if i.get('status') == 'no_text' and i.get('verdict') not in verdicts)
+    n_fail = sum(1 for i in items if i.get('status') in failed and i.get('verdict') not in verdicts)
+    n_other = len(items) - sum(counts.values()) - n_na - n_nt - n_fail
+    parts = [f'{k} {counts[k]}' for k in verdicts]
     if n_na:
         parts.append(f'해당 없음 {n_na}')
-    if s.get('n_failed'):
-        parts.append(f'판정 못 받음 {s["n_failed"]}')
+    if n_nt:
+        parts.append(f'서술 없음 {n_nt}')
+    if n_fail:
+        parts.append(f'판정 못 받음 {n_fail}')
+    if n_other:
+        parts.append(f'기타 {n_other}')
     line2 = (f'호출 {cost.get("n_calls", 0)}회 · 기억에서 {cost.get("n_cached", 0)}회 · '
              f'실제 비용 ${float(cost.get("actual_usd") or 0):.4f}'
              + (f' · {float(timing.get("seconds") or 0):.1f}초' if timing else ''))

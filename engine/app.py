@@ -188,7 +188,8 @@ html, body, .stApp, .stApp *,
 
 # ── 도우미 ──────────────────────────────────────────────────────────
 def esc(v):
-    return html.escape(str(v))
+    # $를 HTML 문자로 바꾼다. 일반 마크다운(제목 줄 등)에서 $…$ 두 개가 수식으로 읽혀 글자가 사라지는 것을 막는다.
+    return html.escape(str(v)).replace('$', '&#36;')
 
 
 def dec(v, nd=1):

@@ -15,9 +15,14 @@ web_qual 모듈의 진짜 흐름(예상 비용 → 버튼 → 항목별 진행 �
   5. 실패(네트워크 등)해도 화면이 멈추지 않고 안내와 「판정 못 받음」을 보여 준다
   6. 서류 없이 올리면 AI 버튼 대신 안내, openpyxl이 없으면 엑셀 버튼 대신 안내
   7. 카드 HTML: 이스케이프, source 필드(있을 때·없을 때), 가짜 인용 표시, 화면 CSS와 클래스 일치
+  8. $ 처리: 이스케이프하지 않은 $가 한 글자에 둘 이상이면 실패(마크다운이 수식으로 읽어 글자가 사라진다),
+     법인명에 $가 있어도 제목이 그대로 나온다
+  9. AI 요약 줄: 숫자를 더하면 항목 수와 같다(서술 없음·해당 없음·판정 못 받음이 빠지지 않는다)
 """
+import ast
 import functools
 import inspect
+import json
 import re
 import shutil
 import sys
@@ -188,7 +193,7 @@ class TestButtonFlow(unittest.TestCase):
             self.assertEqual(env.calls, n1)
             h = _html(at)
             self.assertGreaterEqual(h.count('>기억에서<'), 7)
-            self.assertIn('실제 비용 $0.0000', h)
+            self.assertIn('실제 비용 &#36;0.0000', h)
             env.cleanup()
 
     def test_new_session_uses_disk_memory(self):
@@ -319,7 +324,7 @@ class TestCards(unittest.TestCase):
         out = V.items_html(res)
         self.assertLess(out.index('Q-01'), out.index('Q-02'))
         self.assertIn('충분 1 · 보완 필요 1 · 판단 불가 0', out)
-        self.assertIn('실제 비용 $0.0123', out)
+        self.assertIn('실제 비용 &#36;0.0123', out)
         self.assertIn('AI 참고 의견입니다.', out)
 
     def test_every_class_has_css_in_app(self):
@@ -337,6 +342,166 @@ class TestCards(unittest.TestCase):
                 self.assertIn('.' + cls, css, cls)
             else:
                 self.assertIn('.' + cls, css, f'app.py 스타일에 .{cls} 없음')
+
+
+# ───────────────────────── $ 처리 ─────────────────────────
+def _unescaped_dollar_strings(source, min_count=2):
+    """파이썬 소스의 문자열(f-문자열은 {}를 가린 한 덩어리)에서 이스케이프하지 않은 $가 min_count개 이상인 것을 찾는다.
+    Streamlit 마크다운은 $…$ 두 개를 수식으로 읽는다. 「예상 약 $0.10, 최대 $0.30」처럼 한 글자에 $가 둘이면 글자체가 바뀌고
+    띄어쓰기가 사라진다. 이스케이프는 \\$ 로 쓴다(소스에서는 \\\\$). 독스트링은 화면에 나가지 않으므로 뺀다."""
+    tree = ast.parse(source)
+    docstrings = set()
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.body:
+            first = node.body[0]
+            if isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant) and isinstance(first.value.value, str):
+                docstrings.add(id(first.value))
+    bad = []
+    for node in ast.walk(tree):
+        if id(node) in docstrings:
+            continue
+        if isinstance(node, ast.JoinedStr):
+            text = ''.join(v.value if isinstance(v, ast.Constant) else '\x00' for v in node.values)
+        elif isinstance(node, ast.Constant) and isinstance(node.value, str):
+            text = node.value
+        else:
+            continue
+        if len(re.findall(r'(?<!\\)\$', text)) >= min_count:
+            bad.append((node.lineno, text[:60]))
+    return bad
+
+
+def _item(rule_id='Q-01', **kw):
+    it = {'rule_id': rule_id, 'document': 'EMP', 'item': 'x', 'question': '질문', 'cited_clause': '근거',
+          'status': 'ok', 'message': '', 'verdict': '충분', 'reason': '이유', 'missing_points': [], 'checks': [],
+          'flags': [], 'fake_citations': 0, 'cached': False}
+    it.update(kw)
+    return it
+
+
+class TestDollarSigns(unittest.TestCase):
+    def _all_texts(self, at):
+        out = [b.label for b in at.button]
+        for coll in (at.caption, at.markdown, at.warning, at.info, at.error, at.success):
+            out += [e.value for e in coll]
+        return out
+
+    def _assert_no_math_pair(self, at, where):
+        for t in self._all_texts(at):
+            n = len(re.findall(r'(?<!\\)\$', t))
+            self.assertLess(n, 2, f'{where}: 이스케이프하지 않은 $가 {n}개 — {t[:80]!r}')
+
+    def test_source_has_no_string_with_two_unescaped_dollars(self):
+        for rel in ('app.py', 'corsia/web_view.py'):
+            bad = _unescaped_dollar_strings((ENGINE / rel).read_text(encoding='utf-8'))
+            self.assertEqual(bad, [], f'{rel}: 이스케이프하지 않은 $가 둘 이상인 문자열이 있다(소스에서는 \\\\$로 쓴다)')
+
+    def test_checker_catches_the_known_bug(self):
+        """검사기 자체 시험: 팀장이 찾은 원래 버그(라벨에 $ 두 개)는 잡고, 고친 모양은 통과시킨다"""
+        bug = 'label = f"AI 정성 검증 실행 (예상 약 ${a:.2f}, 최대 ${b:.2f})"'
+        fixed = 'label = f"AI 정성 검증 실행 (예상 약 \\\\${a:.2f}, 최대 \\\\${b:.2f})"'
+        self.assertTrue(_unescaped_dollar_strings(bug))
+        self.assertEqual(_unescaped_dollar_strings(fixed), [])
+        self.assertEqual(_unescaped_dollar_strings('x = "비용 $5"'), [])            # 하나뿐이면 수식이 되지 않는다
+        self.assertTrue(_unescaped_dollar_strings('x = "비용 $5, 가격 $10"'))
+
+    def test_card_html_never_contains_raw_dollar(self):
+        evil = '비용은 $5에서 $10 사이, 가격 $20'
+        it = _item(reason=evil, question=evil, missing_points=[evil], cited_clause=evil,
+                   checks=[{'id': 'C1', 'kind': '필수', 'text': evil, 'status': '부족', 'evidence': evil, 'note': evil, 'flag': evil}])
+        out = V.items_html({'items': [it], 'cost': {'actual_usd': 0.0123}, 'timing': {'seconds': 1}, 'disclaimer': evil})
+        self.assertNotIn('$', out)                                   # 비용 줄의 $도 HTML 문자로
+        self.assertIn('&#36;5', out)
+        self.assertIn('실제 비용 &#36;0.0123', out)
+
+    def test_runtime_texts_have_no_two_unescaped_dollars(self):
+        with _Env() as env:
+            for idx in (WEAK, DIRTY):
+                at = _app(idx)
+                self.assertIn('\\$', _ai_button(at).label)            # 라벨의 $는 \$ 로 이스케이프되어 있다
+                self._assert_no_math_pair(at, f'샘플 {idx} 실행 전')
+                _ai_button(at).click().run()
+                self.assertEqual(len(at.exception), 0)
+                self._assert_no_math_pair(at, f'샘플 {idx} 실행 후')
+            env.cleanup()
+
+    def test_company_name_with_dollars_shows_as_typed(self):
+        """법인명에 $가 둘이면 제목이 수식으로 읽혀 글자가 사라졌다 — HTML 문자로 바꿔 그대로 보인다"""
+        docs = json.loads((ENGINE / 'dataset' / 'documents.json').read_text(encoding='utf-8'))
+        docs['documents']['EMP']['operator_name'] = '$A$ 항공 $B$'
+        tmp = Path(tempfile.mkdtemp())
+        (tmp / 'docs.json').write_text(json.dumps(docs, ensure_ascii=False), encoding='utf-8')
+        (tmp / 'wrap.py').write_text(
+            "import runpy, streamlit as st\n"
+            "class _F:\n"
+            "    def __init__(self, b): self._b = b\n"
+            "    def getvalue(self): return self._b\n"
+            "def _fake(label, *a, **k):\n"
+            f"    flights = r'{ENGINE / 'dataset' / 'flights_clean.csv'}'\n"
+            f"    docs = r'{tmp / 'docs.json'}'\n"
+            "    if label.startswith('비행 기록'):\n"
+            "        return _F(open(flights, 'rb').read())\n"
+            "    if label.startswith('서류 JSON'):\n"
+            "        return _F(open(docs, 'rb').read())\n"
+            "    return None\n"
+            "st.file_uploader = _fake\n"
+            f"runpy.run_path(r'{APP}', run_name='__main__')\n", encoding='utf-8')
+        with _Env(key=False) as env:
+            at = AppTest.from_file(str(tmp / 'wrap.py'), default_timeout=300)
+            at.run()
+            at.radio[0].set_value('파일 올리기')
+            at.run()
+            self.assertEqual(len(at.exception), 0)
+            head = next(m.value for m in at.markdown if m.value.startswith('####'))
+            self.assertIn('&#36;A&#36; 항공 &#36;B&#36;', head)
+            self.assertNotIn('$', head)
+            self._assert_no_math_pair(at, '업로드')
+            env.cleanup()
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+class TestAiSummaryLine(unittest.TestCase):
+    """AI 요약 줄: 항목을 빠짐없이 센다"""
+
+    @staticmethod
+    def _numbers(html_text):
+        head = html_text.split('<div class="qsumsub">')[0]
+        return [int(n) for n in re.findall(r'(?<![\w.])(\d+)(?![\w.])', re.sub(r'<[^>]+>', ' ', head))]
+
+    def test_counts_add_up_to_item_count(self):
+        items = [_item('Q-01', verdict='충분'), _item('Q-02', verdict='보완 필요'), _item('Q-03', verdict='판단 불가'),
+                 _item('Q-04', status='method_missing', verdict='판단 불가'),
+                 _item('Q-05', status='skipped_condition', verdict=None),
+                 _item('Q-06', status='no_text', verdict=None), _item('Q-07', status='no_text', verdict=None),
+                 _item('Q-08', status='network_error', verdict=None),
+                 _item('Q-09', status='budget_exceeded', verdict=None),
+                 _item('Q-10', status='api_error', verdict=None), _item('Q-11', status='parse_error', verdict=None),
+                 _item('Q-12', status='ok', verdict=None)]                           # 어느 범주에도 안 맞는 것은 「기타」
+        out = V.summary_html({'items': items})
+        self.assertEqual(sum(self._numbers(out)), len(items))
+        for want in ('서술 없음 2', '해당 없음 1', '판정 못 받음 4', '기타 1', '판단 불가 2'):
+            self.assertIn(want, out)
+
+    def test_no_text_shown_like_not_applicable(self):
+        out = V.summary_html({'items': [_item('Q-01', verdict='충분'), _item('Q-06', status='no_text', verdict=None),
+                                        _item('Q-05', status='skipped_condition', verdict=None)]})
+        self.assertIn('충분 1 · 보완 필요 0 · 판단 불가 0 · 해당 없음 1 · 서술 없음 1', out)
+
+    def test_zero_categories_hidden(self):
+        out = V.summary_html({'items': [_item('Q-01', verdict='충분')]})
+        for word in ('서술 없음', '해당 없음', '판정 못 받음', '기타'):
+            self.assertNotIn(word, out)
+
+    def test_dirty_sample_summary_counts_no_text(self):
+        """오류주입본(Q-01·Q-06 서술이 비어 있음): 서술 없음 2가 요약 줄에 보이고 합이 8이다"""
+        with _Env() as env:
+            at = _app(DIRTY)
+            _ai_button(at).click().run()
+            h = next(m.value for m in at.markdown if 'class="qsum"' in m.value)
+            seg = h[h.index('<div class="qsum">'):]
+            self.assertIn('서술 없음 2', seg.split('<div class="qsumsub">')[0])
+            self.assertEqual(sum(self._numbers(seg)), 8)
+            env.cleanup()
 
 
 if __name__ == '__main__':
