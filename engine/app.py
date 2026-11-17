@@ -9,7 +9,8 @@ CORSIA 계산·검증 도구 — 웹 화면 (10단계)
   · 맨 위 한 상자에 최종 판정 · 종합점수 · 최종 상쇄의무량 (§3.1)
   · 위반 목록은 표 + 클릭 시 상세 펼침, 근거 조항은 접지 않아도 보임 (§3.2)
   · 규칙 번호는 줄바꿈 금지, 심각도 색 범례, 좁은 창에서는 한 줄을 세 줄로 쌓기 (§3.3)
-  · 정성 검증은 「AI 참고용」 (7단계 연동 전)
+  · 정성 검증: 코드 확인(작성 여부) + 「AI 참고 의견」(버튼을 누를 때만 호출, 최종 판정 아님, 점수·판정과 무관)
+  · 내려받기: JSON + 엑셀(요약·위반 목록·점수 근거·계산 상세·정성 검증)
 
 화면은 표시만 한다. 계산·검증·종합점수는 전부 엔진(corsia)이 한다.
 CLI(`python -m corsia full`)와 같은 엔진을 호출하므로 결과가 항상 같다.
@@ -32,7 +33,15 @@ from corsia.cli import run_pipeline                                   # noqa: E4
 from corsia.io_utils import InputError, check_csv, CSV_ENCODINGS      # noqa: E402
 from corsia.verify import verify                                      # noqa: E402
 from corsia.verify.display import (format_sample, input_label,        # noqa: E402
-                                   from_documents_json, josa_i_ga)
+                                   from_documents_json, josa_i_ga, skip_summary)
+from corsia.excel_export import (build_workbook, result_payload,       # noqa: E402
+                                 to_json_bytes, HAVE_OPENPYXL)
+from corsia.web_view import items_html, partial_items_html            # noqa: E402
+
+try:                                    # AI 정성 검증(채팅 C). 모듈이 없어도 화면은 동작한다
+    from corsia.ai import web_qual      # noqa: E402
+except Exception:                       # noqa: BLE001
+    web_qual = None
 
 DATASET = ROOT / 'dataset'
 
@@ -43,6 +52,12 @@ GREY = '#6B7280'
 SAMPLES = {
     '정상본 (한빛항공 2024)': ('flights_clean.csv', 'saf_batches.csv', 'documents.json'),
     '오류주입본 (한빛항공 2024)': ('flights_dirty.csv', 'saf_batches_dirty.csv', 'documents_dirty.json'),
+    '서술 부실 예시 (한빛항공 가상 서류)': ('flights_clean.csv', 'saf_batches.csv', 'documents_weak.json'),
+}
+SAMPLE_NOTES = {
+    '서술 부실 예시 (한빛항공 가상 서류)':
+        '가상 서류입니다. 정상본 서류에 시험 세트 Q03-D2(노선 결정 절차 서술이 부실한 사례)의 서술을 넣었습니다. '
+        '코드의 판정·종합점수는 정상본과 같습니다 — 코드는 서술이 비어 있는지만 보기 때문입니다.',
 }
 
 st.set_page_config(page_title='CORSIA 계산·검증 도구', layout='wide')
@@ -141,6 +156,32 @@ html, body, .stApp, .stApp *,
    대신 표가 칸보다 넓으면 .kwrap이 가로 스크롤로 넘긴다 */
 .ktable th, .ktable td {overflow-wrap:normal; word-break:keep-all;}
 .ktable td.num {text-align:right; white-space:nowrap;}
+/* ── AI 참고 의견 카드 ── */
+.aihead {font-size:14px; font-weight:600; margin:18px 0 6px;}
+.qcard {border:1px solid rgba(128,128,128,.30); border-left:4px solid #6B7280; border-radius:10px;
+        padding:12px 14px; margin:8px 0; background:rgba(128,128,128,.045);}
+.qtop {display:flex; flex-wrap:wrap; gap:6px 8px; align-items:center;}
+.vbadge {display:inline-block; white-space:nowrap; font-size:12px; font-weight:700;
+         padding:2px 10px; border-radius:999px;}
+.sbadge {display:inline-block; white-space:nowrap; font-size:11px; padding:1px 8px; border-radius:6px;
+         border:1px solid rgba(128,128,128,.45); opacity:.9;}
+.sbadge.warn {border-color:rgba(199,119,0,.6); background:rgba(199,119,0,.10);}
+.qcard .qsrc {margin-left:auto; font-size:11.5px; opacity:.65;}
+.qq {font-size:12.5px; opacity:.7; margin-top:7px;}
+.qreason {font-size:13.5px; margin-top:5px; line-height:1.65;}
+.qmiss {margin-top:8px; font-size:13px;}
+.qmisslbl {font-size:12px; font-weight:600; opacity:.75;}
+.qmiss ul {margin:4px 0 0 18px; padding:0;}
+.qchk {margin-top:8px; font-size:12.5px;}
+.qchk > summary {cursor:pointer; opacity:.8;}
+.qtable td, .qtable th {vertical-align:top; font-size:12.5px;}
+.qtable .qid {white-space:nowrap; font-weight:600;}
+.qev, .qnote {font-size:12px; opacity:.75; margin-top:3px;}
+.qflag {font-size:12px; color:#B42318; margin-top:3px;}
+.qsum {font-size:13px; margin:6px 0 4px;}
+.qsumhead {font-weight:600;}
+.qsumsub {font-size:12px; opacity:.65; margin-top:2px;}
+.qdisc {font-size:11.5px; opacity:.6; margin-top:8px; line-height:1.6;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -157,12 +198,6 @@ def dec(v, nd=1):
         q = Decimal(str(v)).quantize(Decimal(1).scaleb(-nd)) if nd else Decimal(str(v))
         return f'{q:,}'
     return str(v)
-
-
-def json_ready(o):
-    if isinstance(o, Decimal):
-        return float(o)
-    raise TypeError
 
 
 def badge(rule_id, color):
@@ -207,6 +242,7 @@ def analyse(dataset_dir, flights, saf, docs_text):
 
 # ── 사이드바 · 입력 ─────────────────────────────────────────────────
 cli_cmd = None
+data_note = ''
 with st.sidebar:
     st.markdown('### 데이터')
     mode = st.radio('입력 방식', ['샘플 데이터', '파일 올리기'], label_visibility='collapsed')
@@ -214,6 +250,12 @@ with st.sidebar:
     if mode == '샘플 데이터':
         sample = st.selectbox('샘플', list(SAMPLES))
         flights_file, saf_file, docs_name = SAMPLES[sample]
+        if sample in SAMPLE_NOTES:
+            st.caption(SAMPLE_NOTES[sample])
+        data_note = ('가상 데이터 — 한빛항공은 팀이 만든 가상 항공사이며 실제 항공사의 자료가 아닙니다 '
+                     f'(샘플: {sample})')
+        if docs_name == 'documents_weak.json':
+            data_note += ' · 서술 일부는 시험 세트 Q03-D2로 바꾼 가상 서류'
         dataset_dir = str(DATASET)
         docs_text = (DATASET / docs_name).read_text(encoding='utf-8')
         cli_cmd = 'python -m corsia full --dataset ./dataset'
@@ -229,6 +271,8 @@ with st.sidebar:
         if up_f is None:
             st.info('비행 기록 CSV를 올리면 실행됩니다.')
             st.stop()
+        data_note = ('올린 파일 기준 결과입니다. 기단 목록·산정 파라미터·참여국 목록은 샘플(한빛항공)의 것을 사용했습니다.'
+                     + ('' if up_s is not None else ' 적격연료 CSV를 올리지 않아 적격연료 감축량은 0으로 계산했습니다.'))
 
         raw_f = up_f.getvalue()
         raw_s = up_s.getvalue() if up_s is not None else b''
@@ -308,21 +352,8 @@ score_sub = (f"원점수 {dec(sc['raw'])} · {sc['cap_reason']}" if sc['capped']
              else f"원점수 {dec(sc['raw'])} · 상한 {int(sc['cap'])} 미적용")
 
 # 판정 보류 안내 (판정은 바꾸지 않고 안내만)
-skip_html = ''
-if skipped:
-    missing = []
-    for f in skipped:
-        for m in f.get('missing_inputs') or []:
-            if m not in missing:
-                missing.append(m)
-    hints = []
-    if any(from_documents_json(m) for m in missing):
-        hints.append('서류 JSON을 함께 올리면 검증됩니다')
-    others = [input_label(m) for m in missing if not from_documents_json(m)]
-    if others:
-        hints.append('필요한 자료: ' + ', '.join(others))
-    skip_html = (f'<div class="skipnote">일부 규칙 {len(skipped)}개는 자료가 없어 검증하지 못했습니다'
-                 + (f' ({esc(" · ".join(hints))})' if hints else '') + '.</div>')
+_skip_text = skip_summary(skipped)
+skip_html = f'<div class="skipnote">{esc(_skip_text)}</div>' if _skip_text else ''
 
 warn = ''
 if opinion == '불만족':
@@ -428,10 +459,8 @@ q_skip = [f for f in qual if f['status'] == 'SKIPPED']
 st.markdown('<div style="margin-top:22px"></div>', unsafe_allow_html=True)
 st.markdown(f"**정성 검증 {len(qual)}건** &nbsp; "
             f'<span class="aibadge">AI 참고용 · 최종 판정 아님</span>', unsafe_allow_html=True)
-# 「」로 묶은 세 선택지는 한 줄에 함께 보이게 둔다 (읽기 쉽게)
-st.caption('현재는 서술 작성 여부만 확인합니다. 7단계에서 AI를 연결하면 이 자리에 '
-           '<span style="white-space:nowrap">「충분 / 보완 필요 / 판단 불가」</span>와 '
-           '이유·근거 조항이 들어갑니다.', unsafe_allow_html=True)
+st.caption('코드가 확인하는 것은 서술이 비어 있는지뿐입니다. 내용이 기준표의 요건을 갖췄는지는 '
+           '아래 AI 참고 의견으로 봅니다(최종 판정이 아니며, 위의 판정·종합점수·위반 목록과 무관합니다).')
 
 
 def q_rows(items, color_of):
@@ -459,17 +488,110 @@ if qual and len(q_skip) == len(qual):
 else:
     if q_checked:
         ok_n = len(q_checked) - len(q_fail)
-        q_html += (f'<div class="qhead">확인함 {len(q_checked)}건 — 작성됨 {ok_n}건'
+        q_html += (f'<div class="qhead">코드 확인(작성 여부만) — 확인함 {len(q_checked)}건 · 작성됨 {ok_n}건'
                    + (f' · 비어 있거나 부족 {len(q_fail)}건' if q_fail else '') + '</div>')
         if q_fail:
             q_html += q_rows(q_fail, lambda f: SEV_COLOR.get(f['severity'], GREY))
         elif not q_skip:
-            q_html += '<div class="qrow">서술 항목이 모두 작성되어 있습니다.</div>'
+            q_html += '<div class="qrow">서술 항목이 모두 작성되어 있습니다(작성 여부만 본 것입니다).</div>'
     if q_skip:
         q_html += (f'<div class="qhead">확인 못 함 {len(q_skip)}건 — '
                    f'{esc(skip_reason(q_skip))} 없음</div>')
         q_html += q_rows(q_skip, lambda f: GREY)
 st.markdown(q_html, unsafe_allow_html=True)
+
+
+# ── AI 참고 의견 (버튼을 누를 때만 호출) ────────────────────────────
+def run_ai(docs, data_gap):
+    """항목이 끝나는 대로 진행 표시와 카드를 그리고, 마지막 결과(qualitative_result_v1)를 돌려준다."""
+    prog = st.progress(0.0, text='AI 정성 검증을 시작합니다…')
+    live = st.empty()
+    finished, final = {}, None
+    for ev in web_qual.iter_qualitative(docs, data_gap_pct=data_gap):
+        if ev['type'] == 'plan':
+            prog.progress(0.0, text=f"호출 {ev['n_calls']}회 · 기억에서 {ev['n_cached']}건 · 예상 약 \\${ev['estimated_usd']:.2f}")
+        elif ev['type'] == 'item':
+            it = ev['item']
+            finished[it['rule_id']] = it
+            prog.progress(ev['done'] / ev['total'], text=f"{ev['done']}/{ev['total']} 항목 완료 · {it['rule_id']}")
+            live.markdown(partial_items_html(finished), unsafe_allow_html=True)
+        elif ev['type'] == 'done':
+            final = ev['result']
+    prog.empty()
+    live.empty()
+    return final
+
+
+def ai_block(docs_json_text, data_gap):
+    """AI 참고 의견 영역. 내려받기에 넣을 결과(실행했고 ok/partial일 때)를 돌려주고, 아니면 None.
+    이 함수는 판정·종합점수·위반 목록을 읽지도 바꾸지도 않는다."""
+    st.markdown('<div class="aihead">AI 참고 의견 <span class="aibadge">AI 참고용 · 최종 판정 아님</span></div>',
+                unsafe_allow_html=True)
+    if web_qual is None:
+        st.caption('AI 정성 검증 모듈(corsia/ai/web_qual.py)을 불러오지 못했습니다.')
+        return None
+    docs = json.loads(docs_json_text) if docs_json_text else {}
+    try:
+        est = web_qual.estimate_qualitative(docs, data_gap_pct=data_gap)
+    except Exception:                                   # noqa: BLE001  (화면은 멈추지 않는다)
+        st.caption('AI 정성 검증 정보를 읽지 못했습니다.')
+        return None
+    if not est['key_set']:
+        st.caption(web_qual.NO_KEY_TEXT)                # 키가 없으면 지금 화면 그대로 + 한 줄
+        return None
+    if not docs:
+        st.caption('서류 JSON을 올리면 AI 정성 검증을 실행할 수 있습니다.')
+        return None
+    if est['status'] == 'config_error':
+        st.caption(est['status_message'])
+        return None
+
+    h = est['input_hash']
+    store = st.session_state.setdefault('qual_results', {})     # 같은 서류는 다시 부르지 않는다
+    shown = store.get(h)
+    free = est['n_calls'] == 0
+    if shown is None:
+        label = (f"AI 정성 검증 실행 (기억에서 {est['n_cached']}건 · 비용 0)" if free and est['n_cached']
+                 else 'AI 정성 검증 실행 (호출 없음 · 비용 0)' if free
+                 else f"AI 정성 검증 실행 (예상 약 \\${est['estimated_usd']:.2f}, 최대 \\${est['max_usd']:.2f})")
+    elif shown['status'] == 'partial':
+        label = f"못 받은 항목 다시 실행 (예상 약 \\${est['estimated_usd']:.2f}, 최대 \\${est['max_usd']:.2f})"
+    elif free and est['n_cached']:
+        label = '다시 실행 (기억 사용 · 비용 0)'
+    else:
+        label = None
+    over = est['status'] == 'budget_exceeded'
+    clicked = bool(label) and not over and st.button(label, key=f'qual_run_{h}')
+    if over and shown is None:
+        st.caption(est['status_message'])
+
+    note = None
+    if clicked:
+        final = run_ai(docs, data_gap)
+        if final is None:
+            st.caption('AI 정성 검증 결과를 받지 못했습니다. 다시 실행해 보세요.')
+        elif final['status'] in ('ok', 'partial'):
+            store[h] = shown = final
+            st.rerun()                                  # 저장한 결과로 화면을 다시 그린다 (실행 버튼이 남지 않게)
+        else:
+            note = final
+            if final.get('status_message'):
+                st.warning(final['status_message'])
+    elif label and shown is None:
+        st.caption(f"호출 {est['n_calls']}회 · 기억에서 {est['n_cached']}건 · 건너뜀 {est['n_skipped']}건 — "
+                   '버튼을 눌렀을 때만 호출하며, 같은 서류는 결과를 기억해 다시 부르지 않습니다.')
+
+    view = shown or (note if note and note.get('items') else None)
+    if view:
+        if shown and shown['status'] == 'partial':
+            st.caption(web_qual.status_message('partial'))
+        st.markdown(items_html(view), unsafe_allow_html=True)
+        if shown and shown['status'] == 'ok':
+            st.caption('같은 서류는 다시 부르지 않습니다 — 결과는 이 화면과 기억 폴더(engine/ai_cache)에 저장됩니다.')
+    return shown if shown and shown['status'] in ('ok', 'partial') else None
+
+
+ai_result = ai_block(docs_text, c['data_gap_pct'])
 
 # ── 4·5. 계산 상세 / 원본 데이터 ────────────────────────────────────
 st.markdown('<div style="margin-top:14px"></div>', unsafe_allow_html=True)
@@ -496,13 +618,26 @@ with col2:
              dec(r['total_fuel_t']), dec(r['avg_fuel_per_flight'], 2)] for r in rs
         ], num_cols=(2, 3, 4)), unsafe_allow_html=True)
 
-# ── 내려받기 ────────────────────────────────────────────────────────
-st.download_button(
-    '결과 내려받기 (JSON)',
-    data=json.dumps({'calc': calc, 'verification': res},
-                    ensure_ascii=False, indent=2, default=json_ready),
-    file_name=f"corsia_result_{res['meta']['reporting_year']}.json",
-    mime='application/json')
+# ── 내려받기 (JSON · 엑셀) ──────────────────────────────────────────
+# 둘 다 같은 결과 객체(calc, res)에서 만든다. AI 정성 검증은 실행했을 때만 들어간다.
+_year = res['meta']['reporting_year']
+col_j, col_x, _sp = st.columns([1, 1, 2])
+with col_j:
+    st.download_button('결과 내려받기 (JSON)',
+                       data=to_json_bytes(result_payload(calc, res, ai_result)),
+                       file_name=f'corsia_result_{_year}.json', mime='application/json')
+with col_x:
+    _xlsx = None
+    if not HAVE_OPENPYXL:
+        st.caption('엑셀 내려받기에는 openpyxl이 필요합니다 (아나콘다 프롬프트: pip install openpyxl).')
+    else:
+        try:
+            _xlsx = build_workbook(calc, res, ai_result, operator=operator, data_note=data_note)
+        except Exception as e:                          # noqa: BLE001
+            st.caption(f'엑셀을 만들지 못했습니다 ({type(e).__name__}). JSON은 내려받을 수 있습니다.')
+    if _xlsx:
+        st.download_button('결과 내려받기 (엑셀)', data=_xlsx, file_name=f'corsia_result_{_year}.xlsx',
+                           mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 if cli_cmd:
     st.caption('같은 결과를 명령행에서도 얻을 수 있습니다 (engine 폴더에서):')
     st.code(cli_cmd, language=None)

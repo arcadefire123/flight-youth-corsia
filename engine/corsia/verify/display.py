@@ -52,6 +52,26 @@ def from_documents_json(key):
     return INPUT_LABELS.get(key, (key, False))[1]
 
 
+def skip_summary(skipped):
+    """판정 보류 규칙이 있으면 요약 상자·엑셀에 붙일 안내 한 문장. 없으면 ''.
+    판정(ICAO 3종)은 바꾸지 않고 안내만 한다.  skipped : status가 SKIPPED인 규칙 결과 목록"""
+    if not skipped:
+        return ''
+    missing = []
+    for f in skipped:
+        for m in f.get('missing_inputs') or []:
+            if m not in missing:
+                missing.append(m)
+    hints = []
+    if any(from_documents_json(m) for m in missing):
+        hints.append('서류 JSON을 함께 올리면 검증됩니다')
+    others = [input_label(m) for m in missing if not from_documents_json(m)]
+    if others:
+        hints.append('필요한 자료: ' + ', '.join(others))
+    return (f'일부 규칙 {len(skipped)}개는 자료가 없어 검증하지 못했습니다'
+            + (f' ({" · ".join(hints)})' if hints else '') + '.')
+
+
 # ── 2. 위반 상세의 수치·항목 ────────────────────────────────────────
 # (한글 이름, 단위, 소수 자릿수)
 #   소수 자릿수 0/1 → 그 자리로 반올림하고 천 단위 쉼표

@@ -39,6 +39,8 @@ REQUIRED = [
     'corsia/verify/consistency.py', 'corsia/verify/qualitative.py', 'corsia/verify/engine.py',
     'corsia/verify/scoring.py', 'corsia/verify/violation_text.py', 'corsia/verify/display.py', 'app.py',
     'requirements.txt', '.streamlit/config.toml',
+    'corsia/excel_export.py', 'corsia/web_view.py', 'tests/test_excel.py', 'tests/test_web_ui.py',
+    'dataset/documents_weak.json', 'dataset/gen_weak.py',
     'tests/test_engine.py', 'tests/test_verify.py',
     'dataset/flights_clean.csv', 'dataset/flights_dirty.csv', 'dataset/aircraft.csv',
     'dataset/saf_batches.csv', 'dataset/saf_batches_dirty.csv', 'dataset/params.csv',
@@ -77,7 +79,7 @@ g = run_golden(DATA)
 step('골든 케이스 (ICAO 공개 예시)', g['failed'] == 0, f"{g['passed']}/{g['total']}")
 
 # 3. 단위테스트
-for name in ('test_engine', 'test_verify'):
+for name in ('test_engine', 'test_verify', 'test_excel', 'test_web_ui'):
     buf = io.StringIO()
     suite = unittest.defaultTestLoader.discover(str(ROOT / 'tests'), pattern=f'{name}.py')
     with redirect_stdout(buf):
@@ -126,6 +128,18 @@ ASCII_ONLY = ['requirements.txt', '.streamlit/config.toml']
 bad = [fn for fn in ASCII_ONLY if not (ROOT / fn).read_bytes().isascii()]
 step('외부 도구용 파일 한글 없음', not bad,
      ', '.join(ASCII_ONLY) if not bad else '한글 포함: ' + ', '.join(bad))
+
+# 9. 서술 부실 예시 샘플: 코드 판정은 정상본과 같고, 생성 스크립트(gen_weak.py) 결과와 같아야 한다
+dw = json.loads((DATA / 'documents_weak.json').read_text(encoding='utf-8'))
+vw = verify(DATA, **dw)
+same = (vw['opinion']['result'] == '만족' and str(vw['score']['overall']) == EXPECTED_SCORE_CLEAN
+        and vw['computed']['FOR_t'] == EXPECTED_FOR)
+step('서술 부실 예시 (코드 판정은 정상본과 같음)', same,
+     f"{vw['opinion']['result']} · {vw['score']['overall']}점 · {vw['computed']['FOR_t']:,}톤")
+sys.path.insert(0, str(DATA))
+import gen_weak                                        # noqa: E402
+step('서술 부실 예시 = 생성 스크립트 결과', gen_weak.build() == dw,
+     'documents_weak.json을 손으로 고쳤다면 python dataset/gen_weak.py로 다시 만든다')
 
 print('-' * 64)
 print('전체 결과:', '모두 통과' if all(results) else f'{results.count(False)}건 실패')

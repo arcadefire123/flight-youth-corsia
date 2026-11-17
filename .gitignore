@@ -26,3 +26,7 @@ mentor_questions_briefing.md
 # ---- ICAO template files filled with synthetic values (redistribution terms not checked) ----
 11_dummy_documents/*.xlsx
 engine_backup_1117/
+engine/ai_cache/
+engine_backup_1117/
+engine/result.json
+engine/normal.json
